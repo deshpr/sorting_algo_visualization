@@ -110,10 +110,45 @@ def draw_collection(collection, canvas):
 root = None
 canvas = None
 
-def task():
-    print("hello")
-#    root.after(2000, task)
 
+class Application(tkinter.Frame):
+    def __init__(self, master, user_input):
+        tkinter.Frame.__init__(self, master)
+        self.grid()
+        self.create_widgets()
+        self.user_input = user_input
+        self.unsorted = []
+    
+    def create_widgets():
+        self.canvas = Canvas(root, width = 1000, height = 500)
+        self.canvas.configure(background = 'black')
+        self.canvas.pack()
+        startx = 0
+        stary = 0
+        i = 0
+        for item in self.user_input.split(','):
+            startx = (i * width)
+            starty = 0
+            dr = DataRectangle(item,'gray', [startx, starty], width, height)
+            self.unsorted.append(dr)
+            i = i + 1
+
+
+    def update_call(collection, canvas):
+        print("begin insertion sort....")
+        for index in range(1, len(collection)):
+            while 0 < index and collection[index].value < collection[index - 1].value:
+                collection[index], collection[
+                    index - 1] = collection[index - 1], collection[index]
+                draw_collection(collection,canvas)
+                index -= 1
+                time.sleep(5000)
+            draw_collection(collection, canvas)    
+            time.sleep(5000)
+
+    def updater():
+        self.update_call(self.unsorted, self.canvas)
+        self.after(1000,self.updater)
 
 def setup():
     global root, canvas
