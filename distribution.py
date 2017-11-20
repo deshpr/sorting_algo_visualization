@@ -1,0 +1,31 @@
+class Distribution(Enum):
+# Distribution Types 
+# change 'myDistribution' varible to desired distribution       
+	Discrete1 = 0
+	x_Disc1 = 1
+	Pr_x_Disc1 = 2
+	pdf_Disc1 = 3
+	cdf_Disc1 = 4
+	Uniform = 5
+	x_Uni = 6
+	pdf_Uni = 7
+	cdf_Uni = 8
+	Binomial = 9
+	x_Binomial = 10
+	pdf_Binom1 = 11
+	cdf_Binom1 = 12
+	Poisson = 13
+	x_Poisson = 14
+	pdf_Poisson = 15 
+	cdf_Poisson = 16
+	Normal = 17
+	x_Normal = 18
+	pdf_Normal = 19
+	cdf_Normal = 20
+	logNormal = 21
+	x_logNormal = 22
+	pdf_logNormal = 23
+	cdf_logNormal = 24
+	t,x_t = 25
+	pdf_t = 26
+	cdf_t = 27
