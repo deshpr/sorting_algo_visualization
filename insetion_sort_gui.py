@@ -45,10 +45,20 @@ def move_rectangle(root, canvas, rectangleId, coordinates):
     root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
 
 
+def reset_colors(canvas, collection):
+    for element in collection:
+        canvas.itemconfig(element.rectangle, fill='gray')
+    return collection
+
 def insertion_sort_inner(root, collection, canvas, timeLapse = 1000):
     global index
+    reset_colors(canvas, collection)
+    canvas.itemconfig(collection[index].rectangle, fill='yellow')
+    print("index = {}, pre value ={} and other value ={}".format(index, collection[index-1].value, collection[index].value))
     if 0 < index and collection[index].value < collection[index - 1].value: 
         print("next inner iteration with index = {}".format(str(index)))
+        canvas.itemconfig(collection[index - 1].rectangle, fill='blue')
+        canvas.itemconfig(collection[index].rectangle, fill='green')
         collection[index], collection[
             index - 1] = collection[index - 1], collection[index]
         #            print(collection[index - 1])
@@ -77,6 +87,7 @@ def insertion_sort_outer(root, collection, canvas, timeLapse = 1000):
         root.after(timeLapse, insertion_sort_inner, root, collection, canvas, timeLapse)
     else:
         print("Inertion sort complete.")
+    reset_colors(canvas, collection)
 
 
 def insertion_sort(collection, canvas, timeLapse = 1000):
@@ -129,7 +140,7 @@ class DataRectangle():
         self.origin = origin
         self.coordinates = [self.origin[0], self.origin[1],self.origin[0]+width,self.origin[1]+height]    
         self.rectangle = None    
-        self.value = value
+        self.value = int(value)
         self.normalized_value = 0
 
     @property
@@ -206,12 +217,14 @@ if __name__ == '__main__':
     import sys
 
     root = Tk()
+    window_width = 1000
+    window_height = 500
     canvas = Canvas(root, width = 1000, height = 500)
     canvas.configure(background = 'black')
     canvas.pack()
     root.resizable(width=False, height=False)
     root.title('Sorting techniques!')
-    root.geometry('1000x500')
+    root.geometry('{}x{}'.format(window_width, window_height))
 
     # For python 2.x and 3.x compatibility: 3.x has no raw_input builtin
     # otherwise 2.x's input builtin function is too "smart"
@@ -227,7 +240,9 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
-    
+    count = len(user_input.split(','))
+    width = window_width/int(count)
+    values = reversed([for i in range(1,100)])
     for item in user_input.split(','):
         startx = (i * width)
         starty = 0
@@ -248,7 +263,7 @@ if __name__ == '__main__':
     print("start the loop")
     #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
     #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
-    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas))
+    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas, 400))
 #    root.after(2000, insertion_sort, unsorted, canvas) 
     root.mainloop()
     
