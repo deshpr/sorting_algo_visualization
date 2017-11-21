@@ -1,5 +1,3 @@
-
-
 """
 This is pure python implementation of bubble sort algorithm
 For doctests run following command:
@@ -33,17 +31,18 @@ if __name__ == '__main__':
     else:
         input_function = input
         
-	myDistribution = Distribution.Poisson
-    with open("probdist.csv") as csvfile:  
-		readCSV = csv.reader(csvfile, delimiter=',')
-		myData = []
-		next(readCSV)
-		for row in readCSV:
-			data = row[9]
-			myData.append(data)
+    with open("probdist.csv") as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            next(readCSV)
+            for row in readCSV:
+                data = row[9]
+                myData.append(data)
 		
     start_time = time.time()
-    unsorted = [float(item) for item in myData]
+    user_input = input_function('Enter numbers separated by a comma:\n')
+    unsorted = [int(item) for item in user_input.split(',')]
+#    unsorted = [float(item) for item in myData]
     print(bubble_sort(unsorted))
     print("--- %s seconds ---" % (time.time() - start_time))
 

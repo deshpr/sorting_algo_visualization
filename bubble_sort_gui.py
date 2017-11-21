@@ -1,13 +1,17 @@
 """
-This is a pure python implementation of the insertion sort algorithm
+This is pure python implementation of bubble sort algorithm
 For doctests run following command:
-python -m doctest -v insertion_sort.py
+python -m doctest -v bubble_sort.py
 or
-python3 -m doctest -v insertion_sort.py
+python3 -m doctest -v bubble_sort.py
 For manual testing run:
-python insertion_sort.py
+python bubble_sort.py
 """
+
 from __future__ import print_function
+import csv
+import time
+import enum
 from tkinter import *
 import time
 import math
@@ -94,51 +98,50 @@ def insertion_sort_outer(root, collection, canvas, timeLapse = 1000):
         print("Inertion sort complete.")
     reset_colors(canvas, collection)
 
+def bubble_sort_inner(root, outerIndex, innerIndex, collection, canvas, timeLapse = 1000):
+#    print("inner bubble sort call")
+    reset_colors(canvas, collection)
+#    canvas.itemconfig(collection[outerIndex].rectangle, fill='yellow')
+    if innerIndex < outerIndex:
+#       canvas.itemconfig(collection[innerIndex + 1].rectangle, fill='blue')
+#       canvas.itemconfig(collection[innerIndex].rectangle, fill='green')
+        if collection[innerIndex].value > collection[innerIndex+1].value:
+            collection[innerIndex], collection[innerIndex+1] = collection[innerIndex+1], collection[innerIndex]
+            swap_xCoordinates(collection[innerIndex + 1], collection[innerIndex])
+            #            swap_rectangles(collection[index - 1], collection[index])
+            canvas.coords(collection[innerIndex + 1].rectangle,collection[innerIndex+1].coordinates[0], collection[innerIndex+1].coordinates[1],collection[innerIndex+1].coordinates[2], collection[innerIndex+1].coordinates[3])
+            canvas.coords(collection[innerIndex].rectangle,collection[innerIndex].coordinates[0], collection[innerIndex].coordinates[1], collection[innerIndex].coordinates[2],  collection[innerIndex].coordinates[3])                
+            root.after(timeLapse, bubble_sort_inner, root, outerIndex, innerIndex + 1, collection, canvas, timeLapse)
+        root.after(timeLapse, bubble_sort_inner, root, outerIndex, innerIndex + 1, collection, canvas, timeLapse)
+    else:
+        root.after(timeLapse, bubble_sort_outer, root, outerIndex, innerIndex, collection, canvas, timeLapse)
 
-def insertion_sort(collection, canvas, timeLapse = 1000):
-    sorted_results = False
-    """Pure implementation of the insertion sort algorithm in Python
-    :param collection: some mutable ordered collection with heterogeneous
-    comparable items inside
-    :return: the same collection ordered by ascending
-    Examples:
-    >>> insertion_sort([0, 5, 3, 2, 2])
-    [0, 2, 2, 3, 5]
-    >>> insertion_sort([])
-    []
-    >>> insertion_sort([-2, -5, -45])
-    [-45, -5, -2]
-    """
-    print("begin insertion sort....")
-    for dr in collection:
-        print("coordinates - {}".format(str(dr.coordinates)))
-    for index in range(1, len(collection)):
-        while 0 < index and collection[index].value < collection[index - 1].value:            
-            print("next while loop iteration")
-            collection[index], collection[
-                index - 1] = collection[index - 1], collection[index]
-#            print(collection[index - 1])
-#            print(type(collection[index - 1]))
-            swap_xCoordinates(collection[index - 1], collection[index])
-#            swap_rectangles(collection[index - 1], collection[index])
-            canvas.coords(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1],collection[index-1].coordinates[2], collection[index-1].coordinates[3])
-            canvas.coords(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1], collection[index].coordinates[2],  collection[index].coordinates[3])                
-#            draw_collection(collection,canvas)
-#            break
-            index -= 1            
-            time.sleep(timeLapse/1000)
-#        draw_collection(collection, canvas)    
-        print("next for loop iteration")
-#        break
-        time.sleep(timeLapse/1000)
-    print("sorting is complete..")
-    sorted_results = True
-    print("sorted results")
-    for dr in unsorted:
-        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
-    canvas.update()
+def bubble_sort_outer(root, outerIndex, innerIndex,  collection, canvas, timeLapse = 1000):
+#    print("outer bubble sort call")
+    outerIndex = outerIndex - 1
+    reset_colors(canvas, collection)
+    if outerIndex >= 0:
+        root.after(timeLapse, bubble_sort_inner, root, outerIndex, 0, collection, canvas, timeLapse)
+    else:
+        print("Bubble sort complete.")
+
+def bubble_sort(collection):
+	
+    length = len(collection)
+    for i in range(length-1, -1, -1):#range(length-1, -1, -1)
+        for j in range(i):#range(1, i)
+            if collection[j] > collection[j+1]:
+                collection[j], collection[j+1] = collection[j+1], collection[j]
+
     return collection
 
+if __name__ == '__main__':
+    import sys
+    if sys.version_info.major < 3:
+        input_function = raw_input
+    else:
+        input_function = input
+    
 class DataRectangle():
     def __init__(self, value, color, origin, width, height):
         self.color = color
@@ -267,8 +270,8 @@ if __name__ == '__main__':
     unsorted_data = [float(item) for item in myData]
     unsorted_copy = copy.copy(unsorted_data)
    
-#    unsorted_copy = reversed(list(range(1,100)))
-#    count = int(len(list(range(1,100))))
+#    unsorted_copy = reversed(list(range(1,10)))
+#    count = int(len(list(range(1,10))))
     count = len(unsorted_copy)
     timeLapse = 1
     width = window_width/int(count)
@@ -293,23 +296,35 @@ if __name__ == '__main__':
 #        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
     
 #    print("start the loop")
-    #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
-    #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
-    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas, timeLapse))
-#    root.after(2000, insertion_sort, unsorted, canvas) 
+    outerIndex = len(unsorted)
+    timeLapse = 10
+    print("start bubble sort")
+    root.after(2000, lambda: bubble_sort_outer(root, outerIndex, 0,  unsorted, canvas, timeLapse))
     root.mainloop()
-    
-    #root.after(1, insertion_sort,  unsorted, canvas)
-#    draw_collection(sorted, canvas)
-    
-
-"""    for rect in unsorted:
-        print("value is  = {}".format(rect.value))
-        rect.coordinates[0]  = i * 50
-        rect.coordinates[2] += i * 50 + 50
-        rect.draw(canvas)
-        i = i + 1
+"""
+    start_time = time.time()
+    user_input = input_function('Enter numbers separated by a comma:\n')
+    unsorted = [int(item) for item in user_input.split(',')]
+#    unsorted = [float(item) for item in myData]
+    print(bubble_sort(unsorted))
+    print("--- %s seconds ---" % (time.time() - start_time))
 """
 
-
+"""
     #print(insertion_sort(unsorted))
+    with open("probdist.csv") as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            next(readCSV)
+            for row in readCSV:
+                data = row[9]
+                myData.append(data)
+		
+    start_time = time.time()
+    user_input = input_function('Enter numbers separated by a comma:\n')
+    unsorted = [int(item) for item in user_input.split(',')]
+#    unsorted = [float(item) for item in myData]
+    print(bubble_sort(unsorted))
+    print("--- %s seconds ---" % (time.time() - start_time))
+"""
+
