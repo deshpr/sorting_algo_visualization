@@ -106,59 +106,61 @@ def print_results(collection):
 def draw_collection(collection, canvas):
     for dr in collection:
         dr.draw(canvas, invertY = True)
-
-root = None
-canvas = None
+    print("finished drawing")
 
 
-class Application(tkinter.Frame):
-    def __init__(self, master, user_input):
-        tkinter.Frame.__init__(self, master)
-        self.grid()
+class Application(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master)
         self.create_widgets()
-        self.user_input = user_input
-        self.unsorted = []
     
-    def create_widgets():
+    def create_widgets(self):
         self.canvas = Canvas(root, width = 1000, height = 500)
         self.canvas.configure(background = 'black')
         self.canvas.pack()
+        self.unsorted = []
+        self.sortingComplete = False
+
+#        self.canvas.pack()
         startx = 0
         stary = 0
         i = 0
+        width = 100
+        height = 100
+        user_input = input_function('Enter numbers separated by a comma:\n')
+        self.user_input = user_input
+
         for item in self.user_input.split(','):
             startx = (i * width)
             starty = 0
             dr = DataRectangle(item,'gray', [startx, starty], width, height)
             self.unsorted.append(dr)
             i = i + 1
-
-
-    def update_call(collection, canvas):
-        print("begin insertion sort....")
-        for index in range(1, len(collection)):
-            while 0 < index and collection[index].value < collection[index - 1].value:
-                collection[index], collection[
-                    index - 1] = collection[index - 1], collection[index]
-                draw_collection(collection,canvas)
-                index -= 1
-                time.sleep(5000)
-            draw_collection(collection, canvas)    
-            time.sleep(5000)
-
-    def updater():
+        self.unsorted = assign_colors(self.unsorted)
+        self.unsorted = normalize_collection(self.unsorted)
+        self.unsorted = assign_heights(self.unsorted, 300)
+        draw_collection(self.unsorted, self.canvas) 
+        print("start the loop")
         self.update_call(self.unsorted, self.canvas)
-        self.after(1000,self.updater)
 
-def setup():
-    global root, canvas
-    root = Tk()
-    canvas = Canvas(root, width = 1000, height = 500)
-    canvas.configure(background = 'black')
-    canvas.pack()
-    root.resizable(width=False, height=False)
-    root.title('Sorting techniques!')
-    root.geometry('1000x500')
+    def update_call(self, collection, canvas):
+        if not self.sortingComplete:
+            print("begin insertion sort....")
+            
+            for index in range(1, len(collection)):
+                while 0 < index and collection[index].value < collection[index - 1].value:
+                    collection[index], collection[
+                        index - 1] = collection[index - 1], collection[index]
+    #                draw_collection(collection,canvas)
+                    index -= 1
+                    time.sleep(5000)
+    #            draw_collection(collection, canvas)    
+    #            time.sleep(5000)
+        else:
+            print("already sorted")
+    def updater(self):
+        print("call update")
+ #       self.update_call(self.unsorted, self.canvas)
 
 
 if __name__ == '__main__':
@@ -171,40 +173,12 @@ if __name__ == '__main__':
     else:
         input_function = input
 
-    user_input = input_function('Enter numbers separated by a comma:\n')
-    setup()
-    startx = 0
-    stary = 0
-    i = 0
-    width = 100
-    height = 100
-    unsorted = []
-    for item in user_input.split(','):
-        startx = (i * width)
-        starty = 0
-        dr = DataRectangle(item,'gray', [startx, starty], width, height)
-        unsorted.append(dr)
-        i = i + 1
-    
-    #unsorted = [DataRectangle(item, 'red',[0,0], 50,50) for item in user_input.split(',')]
-    i = 0
-    unsorted = assign_colors(unsorted)
-    unsorted = normalize_collection(unsorted)
-    unsorted = assign_heights(unsorted, 300)
-    draw_collection(unsorted, canvas) 
-    print("start the loop")
-    insertion_sort(unsorted, canvas)
-    #root.after(1, insertion_sort,  unsorted, canvas)
-#    draw_collection(sorted, canvas)
-    
-
-"""    for rect in unsorted:
-        print("value is  = {}".format(rect.value))
-        rect.coordinates[0]  = i * 50
-        rect.coordinates[2] += i * 50 + 50
-        rect.draw(canvas)
-        i = i + 1
-"""
-
-
-    #print(insertion_sort(unsorted))
+    root = Tk()
+    canvas = Canvas(root, width = 1000, height = 500)
+    canvas.configure(background = 'black')
+    canvas.pack()
+    root.resizable(width=False, height=False)
+    root.title('Sorting techniques!')
+    root.geometry('1000x500')
+    app = Application(root)
+    root.mainloop()
