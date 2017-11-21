@@ -44,19 +44,39 @@ def move_rectangle(root, canvas, rectangleId, coordinates):
     canvas.coords(rectangleId,coordinates[0], coordinates[1], coordinates[2], coordinates[3])
     root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
 
-"""
-def insertion_sort_inner(collection, canvas, timeLapse = 1000):
+
+def insertion_sort_inner(root, collection, canvas, timeLapse = 1000):
     global index
     if 0 < index and collection[index].value < collection[index - 1].value: 
-        print("next inner iteration")
+        print("next inner iteration with index = {}".format(str(index)))
+        collection[index], collection[
+            index - 1] = collection[index - 1], collection[index]
+        #            print(collection[index - 1])
+        #            print(type(collection[index - 1]))
+        swap_xCoordinates(collection[index - 1], collection[index])
+        #            swap_rectangles(collection[index - 1], collection[index])
+        canvas.coords(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1],collection[index-1].coordinates[2], collection[index-1].coordinates[3])
+        canvas.coords(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1], collection[index].coordinates[2],  collection[index].coordinates[3])                
+        #            draw_collection(collection,canvas)
+        #            break
+        index -= 1      
+        print("call inner loop again...")      
+        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, timeLapse)
+    else:
+        print("inner for loop complete.")
+        root.after(timeLapse, insertion_sort_outer, root, collection, canvas, timeLapse)
 
 
-index = 1
-def insertion_sort_outer(collection, canvas, timeLapse = 1000):
+
+index = 0
+def insertion_sort_outer(root, collection, canvas, timeLapse = 1000):
     global index
+    index = index + 1
     if(index < len(collection)):
         print("next outer loop iteration")
-"""
+        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, timeLapse)
+    else:
+        print("Inertion sort complete.")
 
 
 def insertion_sort(collection, canvas, timeLapse = 1000):
@@ -228,7 +248,7 @@ if __name__ == '__main__':
     print("start the loop")
     #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
     #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
-    root.after(2000, lambda: insertion_sort(unsorted, canvas))
+    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas))
 #    root.after(2000, insertion_sort, unsorted, canvas) 
     root.mainloop()
     
