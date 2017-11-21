@@ -13,7 +13,21 @@ import time
 import math
 import functools
 
+sorted_results = False
+
+def swap_rectangles(rectOne, rectTwo):
+    temp = rectOne.rectangle
+    rectOne.rectangle = rectTwo.rectangle
+    rectTwo.rectangle = temp
+
+def swap_coordinates(rectOne, rectTwo):
+    temp = rectOne.coordinatesInfo
+    rectOne.coordinatesInfo = rectTwo.coordinatesInfo
+    rectTwo.coordinatesInfo = temp
+
+
 def insertion_sort(collection, canvas, timeLapse = 1000):
+    sorted_results = False
     """Pure implementation of the insertion sort algorithm in Python
     :param collection: some mutable ordered collection with heterogeneous
     comparable items inside
@@ -27,15 +41,30 @@ def insertion_sort(collection, canvas, timeLapse = 1000):
     [-45, -5, -2]
     """
     print("begin insertion sort....")
+    for dr in collection:
+        print("coordinates - {}".format(str(dr.coordinates)))
     for index in range(1, len(collection)):
-        while 0 < index and collection[index].value < collection[index - 1].value:
+        while 0 < index and collection[index].value < collection[index - 1].value:            
+            print("next while loop iteration")
             collection[index], collection[
                 index - 1] = collection[index - 1], collection[index]
-            draw_collection(collection,canvas)
-            index -= 1
-            time.sleep(5000)
-        draw_collection(collection, canvas)    
-        time.sleep(5000)
+#            print(collection[index - 1])
+#            print(type(collection[index - 1]))
+#            swap_coordinates(collection[index - 1], collection[index])
+#            swap_rectangles(collection[index - 1], collection[index])
+            canvas.move(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1])
+            canvas.move(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1])                
+#            draw_collection(collection,canvas)
+            index -= 1            
+            time.sleep(timeLapse/1000)
+#        draw_collection(collection, canvas)    
+        print("next for loop iteration")
+        time.sleep(timeLapse/1000)
+    print("sorting is complete..")
+    sorted_results = True
+    print("sorted results")
+    for dr in unsorted:
+        print(dr.value)
     return collection
 
 
@@ -43,7 +72,16 @@ class Rectangle():
     def __init__(self, color, origin, width, height):
         self.color = color
         self.origin = origin
-        self.coordinates = [self.origin[0], self.origin[1],self.origin[0]+width,self.origin[1]+height]        
+        self.coordinates = [self.origin[0], self.origin[1],self.origin[0]+width,self.origin[1]+height]    
+        self.rectangle = None    
+
+    @property
+    def coordinatesInfo(self):
+        return self.coordinates
+
+    @coordinatesInfo.setter
+    def coordinatesInfo(self, value):
+        self.coordinates = value
 
     @property
     def height(self):
@@ -62,7 +100,7 @@ class Rectangle():
         if(invertY):
             coordinates[1] = 500  - coordinates[1] #canvasToDrawOn.winfo_height()
             coordinates[3] = 500  - coordinates[3] #- 500#canvasToDrawOn.winfo_height()
-        canvasToDrawOn.create_rectangle(tuple(coordinates), fill = self.color, outline = 'black')
+        self.rectangle = canvasToDrawOn.create_rectangle(tuple(coordinates), fill = self.color, outline = 'black')
  
 class DataRectangle(Rectangle):
     def __init__(self, value, color, origin, width, height):
@@ -114,9 +152,9 @@ def task():
     print("hello")
 #    root.after(2000, task)
 
+if __name__ == '__main__':
+    import sys
 
-def setup():
-    global root, canvas
     root = Tk()
     canvas = Canvas(root, width = 1000, height = 500)
     canvas.configure(background = 'black')
@@ -124,10 +162,6 @@ def setup():
     root.resizable(width=False, height=False)
     root.title('Sorting techniques!')
     root.geometry('1000x500')
-
-
-if __name__ == '__main__':
-    import sys
 
     # For python 2.x and 3.x compatibility: 3.x has no raw_input builtin
     # otherwise 2.x's input builtin function is too "smart"
@@ -137,7 +171,6 @@ if __name__ == '__main__':
         input_function = input
 
     user_input = input_function('Enter numbers separated by a comma:\n')
-    setup()
     startx = 0
     stary = 0
     i = 0
@@ -148,6 +181,7 @@ if __name__ == '__main__':
         startx = (i * width)
         starty = 0
         dr = DataRectangle(item,'gray', [startx, starty], width, height)
+        print("coordinates - {}".format(str(dr.coordinates)))
         unsorted.append(dr)
         i = i + 1
     
@@ -158,7 +192,10 @@ if __name__ == '__main__':
     unsorted = assign_heights(unsorted, 300)
     draw_collection(unsorted, canvas) 
     print("start the loop")
-    insertion_sort(unsorted, canvas)
+    root.after(2000, lambda: insertion_sort(unsorted, canvas))
+#    root.after(2000, insertion_sort, unsorted, canvas) 
+    root.mainloop()
+    
     #root.after(1, insertion_sort,  unsorted, canvas)
 #    draw_collection(sorted, canvas)
     
