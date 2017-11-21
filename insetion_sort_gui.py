@@ -15,6 +15,17 @@ import functools
 
 sorted_results = False
 
+
+def swap_xCoordinates(rectOne, rectTwo):
+    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
+    tempXOne = rectOne.coordinates[0]
+    rectOne.coordinates[0] = rectTwo.coordinates[0]
+    rectTwo.coordinates[0] = tempXOne
+    tempXTwo = rectOne.coordinates[2]
+    rectOne.coordinates[2] = rectTwo.coordinates[2]
+    rectTwo.coordinates[2] = tempXTwo
+    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
+
 def swap_rectangles(rectOne, rectTwo):
     temp = rectOne.rectangle
     rectOne.rectangle = rectTwo.rectangle
@@ -28,9 +39,14 @@ def swap_coordinates(rectOne, rectTwo):
 def move_rectangle(root, canvas, rectangleId, coordinates):
     print("move rectangle")
     coordinates[0] = coordinates[0] + 25
-    coordinates[2] = coordinates[1] + 25    
+    coordinates[2] = coordinates[2] + 25    
+    print("new coords = {}".format(coordinates))
     canvas.coords(rectangleId,coordinates[0], coordinates[1], coordinates[2], coordinates[3])
     root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
+
+
+
+
 
 def insertion_sort(collection, canvas, timeLapse = 1000):
     sorted_results = False
@@ -56,10 +72,10 @@ def insertion_sort(collection, canvas, timeLapse = 1000):
                 index - 1] = collection[index - 1], collection[index]
 #            print(collection[index - 1])
 #            print(type(collection[index - 1]))
-            swap_coordinates(collection[index - 1], collection[index])
+            swap_xCoordinates(collection[index - 1], collection[index])
 #            swap_rectangles(collection[index - 1], collection[index])
-            canvas.coords(collection[index - 1].rectangle,collection[index].coordinates[0], collection[index].coordinates[1],collection[index].coordinates[2], collection[index].coordinates[3])
-            canvas.coords(collection[index].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1], collection[index-1].coordinates[2],  collection[index-1].coordinates[3])                
+            canvas.coords(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1],collection[index-1].coordinates[2], collection[index-1].coordinates[3])
+            canvas.coords(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1], collection[index].coordinates[2],  collection[index].coordinates[3])                
 #            draw_collection(collection,canvas)
             break
             index -= 1            
@@ -180,7 +196,7 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
-    """
+    
     for item in user_input.split(','):
         startx = (i * width)
         starty = 0
@@ -194,14 +210,14 @@ if __name__ == '__main__':
     unsorted = assign_colors(unsorted)
     unsorted = normalize_collection(unsorted)
     unsorted = assign_heights(unsorted, 300)
-    #draw_collection(unsorted, canvas)
+    draw_collection(unsorted, canvas)
     for dr in unsorted:
         print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
-    """
+    
     print("start the loop")
-    rectangle = canvas.create_rectangle(tuple([0,500-0, 100,500-100]), fill ='red', outline = 'black')
-    root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,500-0, 100,500-100]))
-#    root.after(2000, lambda: insertion_sort(unsorted, canvas))
+    #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
+    #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
+    root.after(2000, lambda: insertion_sort(unsorted, canvas))
 #    root.after(2000, insertion_sort, unsorted, canvas) 
     root.mainloop()
     
