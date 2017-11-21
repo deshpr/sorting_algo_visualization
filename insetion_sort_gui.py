@@ -12,19 +12,25 @@ from tkinter import *
 import time
 import math
 import functools
+import csv
+import time
+import enum
+import psutil
+import os
+import copy
 
 sorted_results = False
 
 
 def swap_xCoordinates(rectOne, rectTwo):
-    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
+#    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
     tempXOne = rectOne.coordinates[0]
     rectOne.coordinates[0] = rectTwo.coordinates[0]
     rectTwo.coordinates[0] = tempXOne
     tempXTwo = rectOne.coordinates[2]
     rectOne.coordinates[2] = rectTwo.coordinates[2]
     rectTwo.coordinates[2] = tempXTwo
-    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
+#    print("before: rect one = {} and rect two = {}".format(rectOne.coordinates, rectTwo.coordinates))
 
 def swap_rectangles(rectOne, rectTwo):
     temp = rectOne.rectangle
@@ -37,10 +43,10 @@ def swap_coordinates(rectOne, rectTwo):
     rectTwo.coordinatesInfo = temp
 
 def move_rectangle(root, canvas, rectangleId, coordinates):
-    print("move rectangle")
+#    print("move rectangle")
     coordinates[0] = coordinates[0] + 25
     coordinates[2] = coordinates[2] + 25    
-    print("new coords = {}".format(coordinates))
+#    print("new coords = {}".format(coordinates))
     canvas.coords(rectangleId,coordinates[0], coordinates[1], coordinates[2], coordinates[3])
     root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
 
@@ -50,30 +56,29 @@ def reset_colors(canvas, collection):
         canvas.itemconfig(element.rectangle, fill='gray')
     return collection
 
-def insertion_sort_inner(root, collection, canvas, timeLapse = 1000):
-    global index
+def insertion_sort_inner(root, collection, canvas, indexPosition, timeLapse = 1000):
     reset_colors(canvas, collection)
-    canvas.itemconfig(collection[index].rectangle, fill='yellow')
-    print("index = {}, pre value ={} and other value ={}".format(index, collection[index-1].value, collection[index].value))
-    if 0 < index and collection[index].value < collection[index - 1].value: 
-        print("next inner iteration with index = {}".format(str(index)))
-        canvas.itemconfig(collection[index - 1].rectangle, fill='blue')
-        canvas.itemconfig(collection[index].rectangle, fill='green')
-        collection[index], collection[
-            index - 1] = collection[index - 1], collection[index]
+    canvas.itemconfig(collection[indexPosition].rectangle, fill='yellow')
+#    print("index = {}, pre value ={} and other value ={}".format(index, collection[index-1].value, collection[index].value))
+    if 0 < indexPosition and collection[indexPosition].value < collection[indexPosition - 1].value: 
+#        print("next inner iteration with index = {}".format(str(index)))
+        canvas.itemconfig(collection[indexPosition - 1].rectangle, fill='blue')
+        canvas.itemconfig(collection[indexPosition].rectangle, fill='green')
+        collection[indexPosition], collection[
+            indexPosition - 1] = collection[indexPosition - 1], collection[indexPosition]
         #            print(collection[index - 1])
         #            print(type(collection[index - 1]))
-        swap_xCoordinates(collection[index - 1], collection[index])
+        swap_xCoordinates(collection[indexPosition - 1], collection[indexPosition])
         #            swap_rectangles(collection[index - 1], collection[index])
-        canvas.coords(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1],collection[index-1].coordinates[2], collection[index-1].coordinates[3])
-        canvas.coords(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1], collection[index].coordinates[2],  collection[index].coordinates[3])                
+        canvas.coords(collection[indexPosition - 1].rectangle,collection[indexPosition-1].coordinates[0], collection[indexPosition-1].coordinates[1],collection[indexPosition-1].coordinates[2], collection[indexPosition-1].coordinates[3])
+        canvas.coords(collection[indexPosition].rectangle,collection[indexPosition].coordinates[0], collection[indexPosition].coordinates[1], collection[indexPosition].coordinates[2],  collection[indexPosition].coordinates[3])                
         #            draw_collection(collection,canvas)
         #            break
-        index -= 1      
-        print("call inner loop again...")      
-        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, timeLapse)
+        indexPosition -= 1      
+#        print("call inner loop again...")      
+        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, indexPosition, timeLapse)
     else:
-        print("inner for loop complete.")
+#        print("inner for loop complete.")
         root.after(timeLapse, insertion_sort_outer, root, collection, canvas, timeLapse)
 
 
@@ -83,8 +88,8 @@ def insertion_sort_outer(root, collection, canvas, timeLapse = 1000):
     global index
     index = index + 1
     if(index < len(collection)):
-        print("next outer loop iteration")
-        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, timeLapse)
+#        print("next outer loop iteration")
+        root.after(timeLapse, insertion_sort_inner, root, collection, canvas, index, timeLapse)
     else:
         print("Inertion sort complete.")
     reset_colors(canvas, collection)
@@ -217,9 +222,9 @@ if __name__ == '__main__':
     import sys
 
     root = Tk()
-    window_width = 1000
-    window_height = 500
-    canvas = Canvas(root, width = 1000, height = 500)
+    window_width = 2000
+    window_height = 1000
+    canvas = Canvas(root, width = window_width, height = window_height)
     canvas.configure(background = 'black')
     canvas.pack()
     root.resizable(width=False, height=False)
@@ -233,7 +238,6 @@ if __name__ == '__main__':
     else:
         input_function = input
 
-    user_input = input_function('Enter numbers separated by a comma:\n')
     startx = 0
     stary = 0
     i = 0
@@ -241,14 +245,38 @@ if __name__ == '__main__':
     height = 100
     unsorted = []
     
-    values = reversed(list(range(1,500)))
-    count = int(len(list(range(1,500))))
+  
+# data file for sorting algoritm
+    dataFile = "sierra1.csv"
+    data_size = 1500 #set to -1 for all data
+    sortedness = 0
+    with open(dataFile) as csvfile:  
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            count = 0
+            next(readCSV)
+            for row in readCSV:
+                count += 1
+                if count == data_size:
+                    break
+                else:
+                    data = row[3]
+                    myData.append(data)
+        
+    start_time = time.time()
+    unsorted_data = [float(item) for item in myData]
+    unsorted_copy = copy.copy(unsorted_data)
+    values = unsorted_copy
+    count = int(len(unsorted_copy))
     width = window_width/int(count)
+
+
+
     for item in values:
         startx = (i * width)
         starty = 0
         dr = DataRectangle(item,'gray', [startx, starty], width, height)
-        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+#        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
         unsorted.append(dr)
         i = i + 1
         
@@ -258,10 +286,10 @@ if __name__ == '__main__':
     unsorted = normalize_collection(unsorted)
     unsorted = assign_heights(unsorted, 300)
     draw_collection(unsorted, canvas)
-    for dr in unsorted:
-        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+#    for dr in unsorted:
+#        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
     
-    print("start the loop")
+#    print("start the loop")
     #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
     #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
     root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas, 5))
