@@ -44,8 +44,19 @@ def move_rectangle(root, canvas, rectangleId, coordinates):
     canvas.coords(rectangleId,coordinates[0], coordinates[1], coordinates[2], coordinates[3])
     root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
 
+"""
+def insertion_sort_inner(collection, canvas, timeLapse = 1000):
+    global index
+    if 0 < index and collection[index].value < collection[index - 1].value: 
+        print("next inner iteration")
 
 
+index = 1
+def insertion_sort_outer(collection, canvas, timeLapse = 1000):
+    global index
+    if(index < len(collection)):
+        print("next outer loop iteration")
+"""
 
 
 def insertion_sort(collection, canvas, timeLapse = 1000):
@@ -77,12 +88,12 @@ def insertion_sort(collection, canvas, timeLapse = 1000):
             canvas.coords(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1],collection[index-1].coordinates[2], collection[index-1].coordinates[3])
             canvas.coords(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1], collection[index].coordinates[2],  collection[index].coordinates[3])                
 #            draw_collection(collection,canvas)
-            break
+#            break
             index -= 1            
             time.sleep(timeLapse/1000)
 #        draw_collection(collection, canvas)    
         print("next for loop iteration")
-        break
+#        break
         time.sleep(timeLapse/1000)
     print("sorting is complete..")
     sorted_results = True
