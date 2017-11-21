@@ -25,6 +25,12 @@ def swap_coordinates(rectOne, rectTwo):
     rectOne.coordinatesInfo = rectTwo.coordinatesInfo
     rectTwo.coordinatesInfo = temp
 
+def move_rectangle(root, canvas, rectangleId, coordinates):
+    print("move rectangle")
+    coordinates[0] = coordinates[0] + 25
+    coordinates[2] = coordinates[1] + 25    
+    canvas.coords(rectangleId,coordinates[0], coordinates[1], coordinates[2], coordinates[3])
+    root.after(2000, lambda:move_rectangle(root, canvas, rectangleId, coordinates))
 
 def insertion_sort(collection, canvas, timeLapse = 1000):
     sorted_results = False
@@ -50,30 +56,34 @@ def insertion_sort(collection, canvas, timeLapse = 1000):
                 index - 1] = collection[index - 1], collection[index]
 #            print(collection[index - 1])
 #            print(type(collection[index - 1]))
-#            swap_coordinates(collection[index - 1], collection[index])
+            swap_coordinates(collection[index - 1], collection[index])
 #            swap_rectangles(collection[index - 1], collection[index])
-            canvas.move(collection[index - 1].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1])
-            canvas.move(collection[index].rectangle,collection[index].coordinates[0], collection[index].coordinates[1])                
+            canvas.coords(collection[index - 1].rectangle,collection[index].coordinates[0], collection[index].coordinates[1],collection[index].coordinates[2], collection[index].coordinates[3])
+            canvas.coords(collection[index].rectangle,collection[index-1].coordinates[0], collection[index-1].coordinates[1], collection[index-1].coordinates[2],  collection[index-1].coordinates[3])                
 #            draw_collection(collection,canvas)
+            break
             index -= 1            
             time.sleep(timeLapse/1000)
 #        draw_collection(collection, canvas)    
         print("next for loop iteration")
+        break
         time.sleep(timeLapse/1000)
     print("sorting is complete..")
     sorted_results = True
     print("sorted results")
     for dr in unsorted:
-        print(dr.value)
+        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+    canvas.update()
     return collection
 
-
-class Rectangle():
-    def __init__(self, color, origin, width, height):
+class DataRectangle():
+    def __init__(self, value, color, origin, width, height):
         self.color = color
         self.origin = origin
         self.coordinates = [self.origin[0], self.origin[1],self.origin[0]+width,self.origin[1]+height]    
         self.rectangle = None    
+        self.value = value
+        self.normalized_value = 0
 
     @property
     def coordinatesInfo(self):
@@ -98,16 +108,9 @@ class Rectangle():
     def draw(self, canvasToDrawOn, invertY = False):
         coordinates  = self.coordinates[:]
         if(invertY):
-            coordinates[1] = 500  - coordinates[1] #canvasToDrawOn.winfo_height()
-            coordinates[3] = 500  - coordinates[3] #- 500#canvasToDrawOn.winfo_height()
-        self.rectangle = canvasToDrawOn.create_rectangle(tuple(coordinates), fill = self.color, outline = 'black')
- 
-class DataRectangle(Rectangle):
-    def __init__(self, value, color, origin, width, height):
-        super(DataRectangle, self).__init__(color, origin, width, height)
-        self.value = value
-        self.normalized_value = 0
-
+            self.coordinates[1] = 500  - coordinates[1] #canvasToDrawOn.winfo_height()
+            self.coordinates[3] = 500  - coordinates[3] #- 500#canvasToDrawOn.winfo_height()
+        self.rectangle = canvasToDrawOn.create_rectangle(tuple(self.coordinates), fill = self.color, outline = 'black')
 
 def normalize_collection(collection):
     values_original = [int(dr.value) for dr in collection] # make a copy
@@ -177,22 +180,28 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
+    """
     for item in user_input.split(','):
         startx = (i * width)
         starty = 0
         dr = DataRectangle(item,'gray', [startx, starty], width, height)
-        print("coordinates - {}".format(str(dr.coordinates)))
+        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
         unsorted.append(dr)
         i = i + 1
-    
+        
     #unsorted = [DataRectangle(item, 'red',[0,0], 50,50) for item in user_input.split(',')]
     i = 0
     unsorted = assign_colors(unsorted)
     unsorted = normalize_collection(unsorted)
     unsorted = assign_heights(unsorted, 300)
-    draw_collection(unsorted, canvas) 
+    #draw_collection(unsorted, canvas)
+    for dr in unsorted:
+        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+    """
     print("start the loop")
-    root.after(2000, lambda: insertion_sort(unsorted, canvas))
+    rectangle = canvas.create_rectangle(tuple([0,500-0, 100,500-100]), fill ='red', outline = 'black')
+    root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,500-0, 100,500-100]))
+#    root.after(2000, lambda: insertion_sort(unsorted, canvas))
 #    root.after(2000, insertion_sort, unsorted, canvas) 
     root.mainloop()
     
