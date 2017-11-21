@@ -240,10 +240,11 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
-    count = len(user_input.split(','))
+    
+    values = reversed(list(range(1,500)))
+    count = int(len(list(range(1,500))))
     width = window_width/int(count)
-    values = reversed([for i in range(1,100)])
-    for item in user_input.split(','):
+    for item in values:
         startx = (i * width)
         starty = 0
         dr = DataRectangle(item,'gray', [startx, starty], width, height)
@@ -263,7 +264,7 @@ if __name__ == '__main__':
     print("start the loop")
     #rectangle = canvas.create_rectangle(tuple([0,0, 100, 100]), fill ='red', outline = 'black')
     #root.after(2000, lambda:move_rectangle(root, canvas, rectangle,[0,0, 100, 100]))
-    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas, 400))
+    root.after(2000, lambda: insertion_sort_outer(root, unsorted, canvas, 5))
 #    root.after(2000, insertion_sort, unsorted, canvas) 
     root.mainloop()
     
