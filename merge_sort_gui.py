@@ -378,12 +378,34 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
+    """
     user_input = input_function('Enter numbers separated by a comma:\n')
     myData = [int(item) for item in user_input.split(',')]
 
     unsorted_data = [float(item) for item in myData]
     unsorted_copy = copy.copy(unsorted_data)
     """
+    # data file for sorting algoritm
+    dataFile = "sierra1.csv"
+    data_size = 100 #set to -1 for all data
+    sortedness = 0
+    with open(dataFile) as csvfile:  
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            count = 0
+            next(readCSV)
+            for row in readCSV:
+                count += 1
+                if count == data_size:
+                    break
+                else:
+                    data = row[3]
+                    myData.append(data)
+        
+    start_time = time.time()
+    unsorted_data = [float(item) for item in myData]
+    unsorted_copy = copy.copy(unsorted_data)
+
 #    unsorted_copy = reversed(list(range(1,100)))
 #    count = int(len(list(range(1,100))))
     count = len(unsorted_copy)
@@ -391,15 +413,36 @@ if __name__ == '__main__':
     width = window_width/int(count)
     values = unsorted_copy
     originalLength = len(values)
+    count = len(unsorted_copy)
+    timeLapse = 100
+    width = window_width/int(count)
+    values = unsorted_copy
+    for item in values:
+        startx = (i * width)
+        starty = 0
+        dr = DataRectangle(item,'gray', [startx, starty], width, height)
+#        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+        unsorted.append(dr)
+        i = i + 1
+        
+    #unsorted = [DataRectangle(item, 'red',[0,0], 50,50) for item in user_input.split(',')]
+    i = 0
+    for dr in unsorted:
+        print("value = {}. coordinates = {}".format(dr.value, dr.coordinates))
+    unsorted = assign_colors(unsorted)
+    unsorted = normalize_collection(unsorted)
+    unsorted = assign_heights(unsorted, 300)
+    draw_collection(unsorted, canvas)
 
 
-    root.after(2000, lambda: merge_outer(root,  values, canvas, 0, lambda x: [print(element) for element in x], timeLapse))
+    root.after(2000, lambda: merge_outer(root,  unsorted, canvas, 0, lambda x: [print("value = {}, coordinates = {}".format(element.value, element.coordinates)) for element in x], timeLapse))
     #    root.after(2000, insertion_sort, unsorted, canvas) 
-    print("results are")
-    for i in values:
-        print(i)
+    root.mainloop()
 
     """
+
+
+
     count = len(unsorted_copy)
     timeLapse = 100
     width = window_width/int(count)
@@ -432,4 +475,4 @@ if __name__ == '__main__':
 #    print(selection_sort(unsorted))
 
     root.mainloop()
-
+    """
