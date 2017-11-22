@@ -126,17 +126,50 @@ def task():
 
 
 
-def quick_sort_implementation(collection):
-   quick_sort_caller(collection,0,len(collection)-1)
 
-def quick_sort_caller(collection,firstIndex,lastIndex):
-   if firstIndex<lastIndex:
-       pivotLocation = quick_sort_partitioning_implementation(collection,firstIndex,lastIndex)
-       quick_sort_caller(collection,firstIndex,pivotLocation-1)
-       quick_sort_caller(collection,pivotLocation+1,lastIndex)
+def quick_sort_implementation(root, canvas, collection, timeLapse):
+   quick_sort_caller(root, canvas, collection,0,len(collection)-1, lambda: [print(element.value) for element in collection], timeLapse)
+
+def quick_sort_caller(root, canvas, collection,firstIndex,lastIndex, callback, timeLapse):
+    if firstIndex<lastIndex:
+        print("call partitioning")
+#        print(collection)
+        initialPivotIndex = firstIndex    
+        pivotValue = collection[initialPivotIndex].value   
+        leftIndex = firstIndex+1
+        rightIndex = lastIndex
+#        print("call method with {}".format(collection[firstIndex:lastIndex + 1]))
+        root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex, pivotValue, firstIndex, lastIndex, leftIndex, rightIndex,  
+                    lambda pivotLocation: quick_sort_caller(root, canvas, collection,firstIndex,pivotLocation-1, 
+                        lambda: quick_sort_caller(root, canvas, collection,pivotLocation+1,lastIndex, callback, timeLapse), timeLapse), timeLapse)
+    else:
+        print("caller is finishing.")
+        callback()
+
+def quick_sort_partitioning_implementation(root, canvas, collection, initialPivotIndex, pivotValue,  firstIndex,lastIndex, leftIndex, rightIndex,  callback, timeLapse):
+    print("right = {}, left = {}".format(rightIndex, leftIndex))
+    if rightIndex >= leftIndex:
+        if leftIndex <= rightIndex and collection[leftIndex].value <= pivotValue:
+            leftIndex = leftIndex + 1
+            root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex,  pivotValue, firstIndex, lastIndex, leftIndex, rightIndex,  callback, timeLapse)
+        elif collection[rightIndex].value >= pivotValue and rightIndex >= leftIndex:
+            rightIndex = rightIndex -1
+            root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex, pivotValue,  firstIndex, lastIndex, leftIndex, rightIndex,  callback, timeLapse)
+        else:
+            temp = collection[leftIndex].value
+            collection[leftIndex].value = collection[rightIndex].value
+            collection[rightIndex].value = temp
+            root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex, pivotValue, firstIndex, lastIndex, leftIndex, rightIndex,  callback, timeLapse)
+    else:
+        temp = collection[initialPivotIndex].value
+        collection[initialPivotIndex].value = collection[rightIndex].value
+        collection[rightIndex].value = temp
+        # rightIndex is the new pivot index.
+        callback(rightIndex) # pass pivot location to the callback
 
 
-def quick_sort_partitioning_implementation(collection,firstIndex,lastIndex):
+"""
+def quick_sort_partitioning_implementation(collection,firstIndex,lastIndex, callback):
    pivotvalue = collection[firstIndex]
 
    leftIndex = firstIndex+1
@@ -164,11 +197,25 @@ def quick_sort_partitioning_implementation(collection,firstIndex,lastIndex):
 
 
    return rightIndex
-
+"""
 
 if __name__ == '__main__':
     import sys
-
+    root = Tk()
+    window_width = 500
+    window_height = 500
+    canvas = Canvas(root, width = window_width, height = window_height)
+    canvas.configure(background = 'black')
+    canvas.pack()
+    root.resizable(width=False, height=False)
+    root.title('Sorting techniques!')
+    root.geometry('{}x{}'.format(window_width, window_height))
+    startx = 0
+    stary = 0
+    i = 0
+    width = 100
+    height = 100
+    unsorted = []
     # For python 2.x and 3.x compatibility: 3.x has no raw_input builtin
     # otherwise 2.x's input builtin function is too "smart"
     if sys.version_info.major < 3:
@@ -176,9 +223,43 @@ if __name__ == '__main__':
     else:
         input_function = input
     import random
-    unsorted=[random.randrange(1,150,1) for _ in range (50)]
-#    user_input = input_function('Enter numbers separated by a comma:\n')
-#    unsorted = [ int(item) for item in user_input.split(',') ]
-    print(unsorted)
-    quick_sort_implementation(unsorted)
+#    unsorted=[random.randrange(1,150,1) for _ in range (5)]
+    user_input = input_function('Enter numbers separated by a comma:\n')
+    unsorted_data = [ int(item) for item in user_input.split(',') ]
+    unsorted_data = [float(item) for item in unsorted_data]
+    unsorted_copy = copy.copy(unsorted_data)
+
+    print(unsorted_copy)
+#    unsorted_copy = reversed(list(range(1,100)))
+#    count = int(len(list(range(1,100))))
+    count = len(unsorted_copy)
+    width = window_width/int(count)
+    values = unsorted_copy
+    originalLength = len(values)
+    count = len(unsorted_copy)
+    timeLapse = 1
+    width = window_width/int(count)
+    values = unsorted_copy
+    i = 0
+    for item in values:
+        startx = (i * width)
+        starty = 0
+        dr = DataRectangle(item,'gray', [startx, starty], width, height)
+#        print("value = {}, coordinates = {}, id = {}".format(dr.value, dr.coordinates, dr.rectangle))
+        unsorted.append(dr)
+        i = i + 1
+        
+    #unsorted = [DataRectangle(item, 'red',[0,0], 50,50) for item in user_input.split(',')]
+    i = 0
+    for dr in unsorted:
+        print("value = {}. coordinates = {}".format(dr.value, dr.coordinates))
+    unsorted = assign_colors(unsorted)
+    unsorted = normalize_collection(unsorted)
+    unsorted = assign_heights(unsorted, 300)
+    draw_collection(unsorted, canvas)
+
+
+
+    quick_sort_implementation(root, canvas, unsorted, 1000)
+    root.mainloop()
     print(unsorted)
