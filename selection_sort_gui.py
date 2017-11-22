@@ -62,14 +62,14 @@ def selection_sort_inner(root, collection, currentIndex, least, outerIndex,  can
     if(currentIndex < len(collection)):
         canvas.itemconfig(collection[outerIndex].rectangle, fill='blue')        
         canvas.itemconfig(collection[currentIndex].rectangle, fill='yellow')
-        print("inner loop running.")
+#        print("inner loop running.")
         if collection[currentIndex].value < collection[least].value:
             least = currentIndex
         currentIndex = currentIndex + 1
         root.after(timeLapse, selection_sort_inner, root, collection, currentIndex, least, outerIndex, canvas, timeLapse)
     else:
         # Inner for loop is complete.
-        print("perform swap")
+#        print("perform swap")
         canvas.itemconfig(collection[outerIndex].rectangle, fill='blue')        
         canvas.itemconfig(collection[least].rectangle, fill='green')
         collection[least], collection[outerIndex] = (
@@ -224,6 +224,9 @@ if __name__ == '__main__':
     width = 100
     height = 100
     unsorted = []
+
+
+    """
     # For python 2.x and 3.x compatibility: 3.x has no raw_input builtin
     # otherwise 2.x's input builtin function is too "smart"
     if sys.version_info.major < 3:
@@ -233,14 +236,33 @@ if __name__ == '__main__':
 
     user_input = input_function('Enter numbers separated by a comma:\n')
     unsorted_data = [int(item) for item in user_input.split(',')]
+"""
 
-    unsorted_data = [float(item) for item in unsorted_data]
+# data file for sorting algoritm
+    dataFile = "sierra1.csv"
+    data_size = 100 #set to -1 for all data
+    sortedness = 0
+    with open(dataFile) as csvfile:  
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            count = 0
+            next(readCSV)
+            for row in readCSV:
+                count += 1
+                if count == data_size:
+                    break
+                else:
+                    data = row[3]
+                    myData.append(data)
+        
+    start_time = time.time()
+    unsorted_data = [float(item) for item in myData]
     unsorted_copy = copy.copy(unsorted_data)
-
+   
     #    unsorted_copy = reversed(list(range(1,100)))
     #    count = int(len(list(range(1,100))))
     count = len(unsorted_copy)
-    timeLapse = 500
+    timeLapse = 1
     width = window_width/int(count)
     values = unsorted_copy
     for item in values:
