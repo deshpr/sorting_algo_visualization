@@ -237,8 +237,29 @@ if __name__ == '__main__':
     unsorted_data=[random.randrange(1,150,1) for _ in range (15)]
 #    user_input = input_function('Enter numbers separated by a comma:\n')
 #    unsorted_data = [ int(item) for item in user_input.split(',') ]
-    unsorted_data = [float(item) for item in unsorted_data]
+#    unsorted_data = [float(item) for item in unsorted_data]
+#    unsorted_copy = copy.copy(unsorted_data)
+    # data file for sorting algoritm
+    dataFile = "sierra1.csv"
+    data_size = 500 #set to -1 for all data
+    sortedness = 0
+    with open(dataFile) as csvfile:  
+            readCSV = csv.reader(csvfile, delimiter=',')
+            myData = []
+            count = 0
+            next(readCSV)
+            for row in readCSV:
+                count += 1
+                if count == data_size:
+                    break
+                else:
+                    data = row[3]
+                    myData.append(data)
+        
+    start_time = time.time()
+    unsorted_data = [float(item) for item in myData]
     unsorted_copy = copy.copy(unsorted_data)
+
 
     print(unsorted_copy)
 #    unsorted_copy = reversed(list(range(1,100)))
@@ -271,6 +292,5 @@ if __name__ == '__main__':
 
 
 
-    quick_sort_implementation(root, canvas, unsorted, 100)
+    quick_sort_implementation(root, canvas, unsorted, 1)
     root.mainloop()
-    print(unsorted)

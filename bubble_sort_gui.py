@@ -101,17 +101,18 @@ def insertion_sort_outer(root, collection, canvas, timeLapse = 1000):
 def bubble_sort_inner(root, outerIndex, innerIndex, collection, canvas, timeLapse = 1000):
 #    print("inner bubble sort call")
     reset_colors(canvas, collection)
-#    canvas.itemconfig(collection[outerIndex].rectangle, fill='yellow')
+    canvas.itemconfig(collection[outerIndex].rectangle, fill='yellow')
+    canvas.itemconfig(collection[innerIndex].rectangle, fill='blue')
     if innerIndex < outerIndex:
 #       canvas.itemconfig(collection[innerIndex + 1].rectangle, fill='blue')
-#       canvas.itemconfig(collection[innerIndex].rectangle, fill='green')
+        canvas.itemconfig(collection[innerIndex + 1].rectangle, fill='green')
         if collection[innerIndex].value > collection[innerIndex+1].value:
             collection[innerIndex], collection[innerIndex+1] = collection[innerIndex+1], collection[innerIndex]
             swap_xCoordinates(collection[innerIndex + 1], collection[innerIndex])
             #            swap_rectangles(collection[index - 1], collection[index])
             canvas.coords(collection[innerIndex + 1].rectangle,collection[innerIndex+1].coordinates[0], collection[innerIndex+1].coordinates[1],collection[innerIndex+1].coordinates[2], collection[innerIndex+1].coordinates[3])
             canvas.coords(collection[innerIndex].rectangle,collection[innerIndex].coordinates[0], collection[innerIndex].coordinates[1], collection[innerIndex].coordinates[2],  collection[innerIndex].coordinates[3])                
-            root.after(timeLapse, bubble_sort_inner, root, outerIndex, innerIndex + 1, collection, canvas, timeLapse)
+#            root.after(timeLapse, bubble_sort_inner, root, outerIndex, innerIndex + 1, collection, canvas, timeLapse)
         root.after(timeLapse, bubble_sort_inner, root, outerIndex, innerIndex + 1, collection, canvas, timeLapse)
     else:
         root.after(timeLapse, bubble_sort_outer, root, outerIndex, innerIndex, collection, canvas, timeLapse)
@@ -251,7 +252,7 @@ if __name__ == '__main__':
   
 # data file for sorting algoritm
     dataFile = "sierra1.csv"
-    data_size = 1500 #set to -1 for all data
+    data_size = 100 #set to -1 for all data
     sortedness = 0
     with open(dataFile) as csvfile:  
             readCSV = csv.reader(csvfile, delimiter=',')
