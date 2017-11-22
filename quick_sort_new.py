@@ -156,14 +156,22 @@ def quick_sort_partitioning_implementation(root, canvas, collection, initialPivo
             rightIndex = rightIndex -1
             root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex, pivotValue,  firstIndex, lastIndex, leftIndex, rightIndex,  callback, timeLapse)
         else:
-            temp = collection[leftIndex].value
-            collection[leftIndex].value = collection[rightIndex].value
-            collection[rightIndex].value = temp
+            collection[leftIndex], collection[rightIndex] = collection[rightIndex], collection[leftIndex]
+#            temp = collection[leftIndex].value
+#            collection[leftIndex].value = collection[rightIndex].value
+#            collection[rightIndex].value = temp
+            swap_xCoordinates(collection[leftIndex], collection[rightIndex])
+            canvas.coords(collection[leftIndex].rectangle,collection[leftIndex].coordinates[0], collection[leftIndex].coordinates[1],collection[leftIndex].coordinates[2], collection[leftIndex].coordinates[3])
+            canvas.coords(collection[rightIndex].rectangle,collection[rightIndex].coordinates[0], collection[rightIndex].coordinates[1], collection[rightIndex].coordinates[2],  collection[rightIndex].coordinates[3])                
             root.after(timeLapse, quick_sort_partitioning_implementation, root, canvas, collection, initialPivotIndex, pivotValue, firstIndex, lastIndex, leftIndex, rightIndex,  callback, timeLapse)
     else:
-        temp = collection[initialPivotIndex].value
-        collection[initialPivotIndex].value = collection[rightIndex].value
-        collection[rightIndex].value = temp
+        collection[initialPivotIndex], collection[rightIndex] = collection[rightIndex], collection[initialPivotIndex]
+        swap_xCoordinates(collection[initialPivotIndex], collection[rightIndex])
+        canvas.coords(collection[initialPivotIndex].rectangle,collection[initialPivotIndex].coordinates[0], collection[initialPivotIndex].coordinates[1],collection[initialPivotIndex].coordinates[2], collection[initialPivotIndex].coordinates[3])
+        canvas.coords(collection[rightIndex].rectangle,collection[rightIndex].coordinates[0], collection[rightIndex].coordinates[1], collection[rightIndex].coordinates[2],  collection[rightIndex].coordinates[3])                
+#        temp = collection[initialPivotIndex].value
+#        collection[initialPivotIndex].value = collection[rightIndex].value
+#        collection[rightIndex].value = temp
         # rightIndex is the new pivot index.
         callback(rightIndex) # pass pivot location to the callback
 
