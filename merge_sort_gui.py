@@ -138,7 +138,7 @@ def task():
 
 originalLength = 0
 
-def merge_sorter(root, collection, canvas, kIndex, leftIndex, rightIndex, left_half, right_half, callBackFunction, timeLapse = 1000):
+def merge_sorter(root, collection, canvas, kIndex, leftIndex, rightIndex, left_half, right_half, callBackFunction, timeLapse):
     global originalLength
     left_length = len(left_half)
     right_length = len(right_half)
@@ -219,7 +219,7 @@ def merge_sorter(root, collection, canvas, kIndex, leftIndex, rightIndex, left_h
             print("merging is complete...")
         callBackFunction(collection)
 
-def merge_outer(root, collection, canvas, startIndex,  callBackFunction, timeLapse = 1000):
+def merge_outer(root, collection, canvas, startIndex,  callBackFunction, timeLapse):
     print("in merge outer")
     if len(collection) <= 1:
         print("outer merge is complete, call the merge sorting callback registered.")
@@ -236,7 +236,7 @@ def merge_outer(root, collection, canvas, startIndex,  callBackFunction, timeLap
         print(id(collection[0]))
         print(id(left_half[0]))
 
-        merge_outer(root, left_half, canvas, startIndex, lambda data : merge_outer(root, right_half, canvas, startIndex + midpoint, lambda data1 : merge_sorter(root, collection, canvas, kIndex, leftIndex, rightIndex, data, data1, callBackFunction, timeLapse), timeLapse))
+        merge_outer(root, left_half, canvas, startIndex, lambda data : merge_outer(root, right_half, canvas, startIndex + midpoint, lambda data1 : merge_sorter(root, collection, canvas, kIndex, leftIndex, rightIndex, data, data1, callBackFunction, timeLapse), timeLapse), timeLapse)
         
 """
 
