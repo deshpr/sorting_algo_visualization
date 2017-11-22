@@ -387,7 +387,7 @@ if __name__ == '__main__':
     """
     # data file for sorting algoritm
     dataFile = "sierra1.csv"
-    data_size = 100 #set to -1 for all data
+    data_size = 1000 #set to -1 for all data
     sortedness = 0
     with open(dataFile) as csvfile:  
             readCSV = csv.reader(csvfile, delimiter=',')
@@ -409,12 +409,11 @@ if __name__ == '__main__':
 #    unsorted_copy = reversed(list(range(1,100)))
 #    count = int(len(list(range(1,100))))
     count = len(unsorted_copy)
-    timeLapse = 10
     width = window_width/int(count)
     values = unsorted_copy
     originalLength = len(values)
     count = len(unsorted_copy)
-    timeLapse = 100
+    timeLapse = 1
     width = window_width/int(count)
     values = unsorted_copy
     for item in values:
